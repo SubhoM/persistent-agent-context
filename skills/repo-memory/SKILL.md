@@ -1,5 +1,6 @@
 ---
 name: repo-memory
+license: MIT
 description: Establishes and maintains a persistent project knowledge base in the repo's /docs folder so any coding assistant — Claude Code, Copilot, Cursor, or similar — can understand the codebase, avoid repeating past investigations, and minimize token usage across sessions. Use this skill at the start of every development session to check for and read existing /docs, whenever no /docs knowledge base exists yet and one should be created, immediately after a significant discovery, bug root-cause, or architectural decision, and before completing any task to keep the documentation current. Also trigger when explicitly asked to "document this repo," "update the project docs," or "check the knowledge base."
 ---
 
@@ -90,6 +91,66 @@ Before completing any task:
 - Confirm the knowledge base reflects the current understanding of the
   repository — not a stale snapshot from earlier in the session.
 
+## Keeping the knowledge base small enough to read
+
+Lesson from a long-running app repo: left alone, `agent-context.md` grew to
+~57 KB of dated status entries and `issues-and-decisions.md` to over 1 MB.
+At that size the "read context first" step costs more than it saves.
+
+- `agent-context.md` is a stable snapshot, not a changelog. Keep a short
+  `CURRENT STATE` block (what is live, in flight, blocked) and revise it in
+  place. Target under ~15 KB.
+- Dated history goes in `issues-and-decisions.md`, newest first, one entry
+  per event. Once something shipped is stable, move its detail there and
+  leave a one-line pointer in `agent-context.md`.
+- Past ~100 KB, move entries older than ~90 days to
+  `docs/archive/<file>-<year>.md` and keep a one-line index in the live file.
+- Entry shape: request or symptom, root cause, fix with file paths,
+  verification (tests run and result). No play-by-play.
+- For large files, grep headings or keywords instead of loading everything.
+- Product, roadmap, store or design documents are not agent memory. Don't
+  merge them into the six files; list them under "Related docs" in
+  `agent-context.md`. One doc per purpose, add to it rather than creating a
+  dated file per event. Keep marketing/promo material outside `/docs`.
+- Keep large unused binaries (videos, raw recordings) out of git, and never
+  record a storage location that also holds credentials.
+
+## Tests
+
+- Document how to test: commands, layout and prerequisites (unit,
+  integration, end-to-end; needed services or credentials, described by
+  shape only) in `code-patterns.md`, plus a one-line "how to run tests"
+  bullet in `agent-context.md`.
+- Every new feature gets tests: unit tests for each function or behavior,
+  and an integration test when it crosses modules, the database, or an
+  external service.
+- Every bug fix gets a regression test that fails without the fix; name it
+  in the `issues-and-decisions.md` entry.
+- Run the relevant suite before completing a task and record suite, count
+  and result. Never claim tests pass without running them.
+- Isolate tests: shared fixtures (e.g. an in-memory database), mocked
+  external services and auth, no network. Keep test-only dependencies apart
+  from production ones.
+- Separate cheap from costly: automated tests are free and fast. Anything
+  that spends money or calls live services (regression matrices, stress
+  scripts) runs by hand, prints a cost estimate first, and needs an explicit
+  confirmation flag above a set limit. Document when to run it.
+- Record what is not automated and why, with the manual check to use
+  instead (e.g. flows needing a secret key that must not be committed). Never
+  commit secrets in tests; delete test users or data you create.
+- Record test gotchas (config flags, fixture quirks) in `code-patterns.md`.
+- If the repo has no tests, record that under known limitations in
+  `future-work.md` and propose a minimal starting set instead of skipping.
+
+## Verification claims
+
+- Tag facts you did not observe: "owner-confirmed <date>" for what the user
+  told you, `Needs Verification` for anything unchecked.
+- Record what was tested (suite, count, result) beside each fix.
+- Record exact command forms that work for allow-listed or automated
+  operations (e.g. a rule stops matching if the command is prefixed with
+  `cd` or `sleep`) in an "Ops notes" bullet.
+
 ## Redaction pass (required before every write)
 
 Before writing or updating any file under `/docs`, scan the draft for
@@ -98,6 +159,11 @@ credentials, connection strings, customer or employee PII, or internal-only
 business logic that shouldn't be broadly readable. Strip or generalize
 matches — describe the shape of the issue rather than including literal
 secrets.
+
+Easy to miss, and present in real logs: user emails and test-account names,
+user/session/row UUIDs, cloud project refs and storage hostnames, support
+ticket numbers, absolute paths that reveal usernames, and internal balances
+or pricing. Write "a test account" or "a session id" instead of the value.
 
 ## Documentation guidelines
 
