@@ -2,6 +2,15 @@
 
 _Last Updated: 2026-10-18_
 
+## Next session (planned)
+- Decide whether to soften the "70-90% per issue" claim in `README.md` and
+  `skills/repo-memory/SKILL.md`; the A/B run showed ~13% mean cost saving on
+  day-one docs (`skills/repo-memory/references/token-efficiency-rationale.md`).
+- Optional: multi-session test of remembered bugs/decisions (the untested
+  main benefit), and re-run on an unfamiliar repo.
+- Marketplace listing: not started. Open points are in the earlier checklist
+  (verify the marketplace's terms; decide free vs. paid extras).
+
 ## Ideas
 - CI check that flags a missing or stale `/docs` (README mentions it as a
   natural next step).
