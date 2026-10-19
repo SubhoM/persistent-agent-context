@@ -4,6 +4,22 @@ _Last Updated: 2026-10-18_
 
 Newest first.
 
+## 2026-10-18: Measured savings with an A/B run
+- Method and results: `skills/repo-memory/references/token-efficiency-rationale.md`
+  ("Controlled A/B measurement"). Mean cost -13%, turns -16%, time -12%;
+  -32% on architecture questions, ~0% on change-impact questions.
+- Finding: README and SKILL.md quote "70-90%" per issue; this measurement
+  does not support that for day-one docs. Needs a decision on softening.
+- Not tested: cross-session memory of past bugs. Needs Verification.
+
+## 2026-10-18: Add read-cost section to token rationale
+- Gap: the rationale only counted savings, not the cost of reading oversized
+  docs.
+- Change: added measured file sizes from the field repo with estimated
+  tokens (~4 bytes/token, estimate) to
+  `skills/repo-memory/references/token-efficiency-rationale.md`.
+- Savings on that repo were not measured; marked Needs Verification.
+
 ## 2026-10-18: Move skill into skills/repo-memory/
 - Why: marketplaces and skill installers expect a folder named after the
   skill (`repo-memory/SKILL.md`), not a root-level `SKILL.md`.
